@@ -2,20 +2,10 @@ import { MenuDataItem } from "@ant-design/pro-components";
 import { getUserLevel } from "./access";
 import { roleLevels, UserRole } from "./userRole";
 
-export const menus: MenuDataItem[] = [
+const menus: MenuDataItem[] = [
   {
     path: "/",
     name: "主页",
-  },
-  {
-    path: "/user/login",
-    name: "登录",
-    access: roleLevels.admin,
-  },
-  {
-    path: "/user/register",
-    name: "注册",
-    access: roleLevels.admin,
   },
   {
     name: "管理",

@@ -4,9 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthLevel, getUserLevel } from "./config/access";
 import { UserRole } from "./config/userRole";
 
-export async function middleware(request: NextRequest, response: NextResponse) {
+export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-
   if (!pathname.startsWith("/_next")) {
     const token = await getToken({ req: request });
 
@@ -16,19 +15,9 @@ export async function middleware(request: NextRequest, response: NextResponse) {
     if (pathname.startsWith("/api")) {
       const method = request.method;
       const pathLevel = getAuthLevel(pathname, method);
-      console.log(
-        "pathname",
-        pathname,
-        "userLevel",
-        userLevel,
-        "pathLevel",
-        pathLevel,
-        "userLevel<pathLevel",
-        userLevel < pathLevel
-      );
 
       if (userLevel < pathLevel) {
-        return NextResponse.redirect(new URL("/forbidden", request.url));
+        return NextResponse.rewrite(new URL("/404", request.url));
       } else {
         return NextResponse.next();
       }
@@ -39,7 +28,7 @@ export async function middleware(request: NextRequest, response: NextResponse) {
       if (userLevel === 0) {
         return NextResponse.redirect(new URL("/user/login", request.url));
       }
-      return NextResponse.redirect(new URL("/forbidden", request.url));
+      return NextResponse.rewrite(new URL("/404", request.url));
     }
   }
   return NextResponse.next();

@@ -1,6 +1,6 @@
 import { Button, Result } from "antd";
 
-const Forbidden = () => {
+const NotFound = () => {
   return (
     <Result
       status="403"
@@ -15,4 +15,4 @@ const Forbidden = () => {
   );
 };
 
-export default Forbidden;
+export default NotFound;
