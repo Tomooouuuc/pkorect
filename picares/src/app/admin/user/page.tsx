@@ -101,7 +101,7 @@ const UserAdminPage = () => {
               sortOrder,
               ...filter,
             };
-            const { code, data } = (await request("/api/get/user", {
+            const { code, data } = (await request("/api/user", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

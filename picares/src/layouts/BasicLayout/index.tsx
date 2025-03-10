@@ -1,5 +1,5 @@
 "use client";
-import { menus } from "@/config/menus";
+import { getAccessMenus } from "@/config/menus";
 import {
   GithubFilled,
   InfoCircleFilled,
@@ -7,10 +7,12 @@ import {
   QuestionCircleFilled,
 } from "@ant-design/icons";
 import { ProLayout } from "@ant-design/pro-components";
-import { Dropdown } from "antd";
+import { Dropdown, message } from "antd";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import React from "react";
 import { GlobalFooter } from "./components/GlobalFooter";
 import "./index.css";
 
@@ -20,6 +22,20 @@ interface Props {
 
 const BasicLayout = ({ children }: Props) => {
   const pathname = usePathname();
+  const session = useSession();
+  const userRole = session.data?.user.userRole;
+  //报错：类型“{ update: UpdateSession; data: Session; status: "authenticated"; } | { update: UpdateSession; data: null; status: "unauthenticated" | "loading"; } | { ...; } | { ...; }”上不存在属性“user”。
+  //类型“{ update: UpdateSession; data: Session; status: "authenticated"; }”上不存在属性“user”。ts(2339)
+  const router = useRouter();
+  const doLogout = async () => {
+    try {
+      await signOut();
+      message.success("已退出登录");
+      router.replace("/user/login");
+    } catch (e: any) {
+      message.error("操作失败");
+    }
+  };
   return (
     <div
       id="basicLayout"
@@ -57,6 +73,12 @@ const BasicLayout = ({ children }: Props) => {
                       label: "退出登录",
                     },
                   ],
+                  onClick: async (event: { key: React.Key }) => {
+                    const { key } = event;
+                    if (key === "logout") {
+                      await doLogout();
+                    }
+                  },
                 }}
               >
                 {dom}
@@ -85,7 +107,7 @@ const BasicLayout = ({ children }: Props) => {
           return <GlobalFooter />;
         }}
         menuDataRender={() => {
-          return menus;
+          return getAccessMenus(userRole);
         }}
         menuItemRender={(item, dom) => (
           <Link href={item.path || "/"} target={item.target}>

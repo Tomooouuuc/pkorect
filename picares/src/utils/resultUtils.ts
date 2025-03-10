@@ -43,6 +43,7 @@ export const throwUtil = (
   errorCode: ErrorCodeType,
   message?: string
 ) => {
+  // 参数校验失败后，这里抛出的异常我希望可以被next-auth捕获
   if (condition) {
     console.log("准备的错误嘛：", errorCode.code);
     throw new BusinessException(errorCode.code, message || errorCode.message);

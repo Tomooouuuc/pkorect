@@ -1,14 +1,17 @@
 import { User } from "@/libs/models";
 import { error, success } from "@/utils/resultUtils";
+import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
-import { checkPage } from "../utils";
+import { authOptions } from "../auth/[...nextauth]/route";
+import { checkPage } from "./utils";
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  // 输出是null
+  // console.log("获取登录用户的session：", session);
   const body = await request.json();
-  console.log("参数是：", body);
   const { current, pageSize, sortField, sortOrder, ...restBody } = body;
   const page = checkPage({ current, pageSize, sortField, sortOrder });
-  console.log("分页参数是：", page);
 
   try {
     const query: any = {

@@ -1,8 +1,8 @@
 "use client";
-import request from "@/libs/request";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { LoginForm, ProForm, ProFormText } from "@ant-design/pro-components";
 import { message } from "antd";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -10,19 +10,19 @@ import React from "react";
 const UserLoginPage: React.FC = () => {
   const [form] = ProForm.useForm();
   const router = useRouter();
+
   const doLogin = async (values: REQUEST.UserLogin) => {
     try {
-      await request("/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: values,
+      await signIn("credentials", {
+        redirect: false,
+        userAccount: values.userAccount,
+        userPassword: values.userPassword,
       });
       message.success("登录成功");
-      router.push("/");
+      router.replace("/");
       form.resetFields();
     } catch (e: any) {
+      console.log("登录失败");
       message.error("登录失败，" + e.message);
     }
   };

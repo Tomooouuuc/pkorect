@@ -54,4 +54,11 @@ declare namespace RESPONSE {
     userRole: string;
     createTime: string;
   };
+  type LoginUser = {
+    id: string;
+    userName?: string;
+    userAvatar?: string;
+    userProfile?: string;
+    userRole: string;
+  };
 }

@@ -2,6 +2,7 @@
 import BasicLayout from "@/layouts/BasicLayout";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@ant-design/v5-patch-for-react-19";
+import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 
 export default function RootLayout({
@@ -12,11 +13,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AntdRegistry>
-          {/* <SessionLayout> */}
-          <BasicLayout>{children}</BasicLayout>
-          {/* </SessionLayout> */}
-        </AntdRegistry>
+        <SessionProvider>
+          <AntdRegistry>
+            <BasicLayout>{children}</BasicLayout>
+          </AntdRegistry>
+        </SessionProvider>
       </body>
     </html>
   );
