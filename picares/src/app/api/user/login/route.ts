@@ -8,11 +8,13 @@ export async function POST(request: Request) {
   try {
     throwUtil(
       body.userAccount.length < 4 || body.userAccount.length > 16,
-      ErrorCode.PARAMS_ERROR
+      ErrorCode.PARAMS_ERROR,
+      "账号或密码错误"
     );
     throwUtil(
       body.userPassword.length < 6 || body.userPassword.length > 16,
-      ErrorCode.PARAMS_ERROR
+      ErrorCode.PARAMS_ERROR,
+      "账号或密码错误"
     );
 
     const password = encodePassword(body.userPassword);
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
         userPassword: data.userPassword,
       },
     });
-    throwUtil(!user, ErrorCode.OPERATION_ERROR, "账号错误");
+    throwUtil(!user, ErrorCode.PARAMS_ERROR, "账号或密码错误");
     return success(user);
   } catch (e: any) {
     console.log("登录错误：", e);

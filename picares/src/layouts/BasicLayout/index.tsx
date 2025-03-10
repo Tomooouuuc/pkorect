@@ -66,13 +66,15 @@ const BasicLayout = ({ children }: Props) => {
             return (
               <Dropdown
                 menu={{
-                  items: [
-                    {
-                      key: "logout",
-                      icon: <LogoutOutlined />,
-                      label: "退出登录",
-                    },
-                  ],
+                  items: userRole
+                    ? [
+                        {
+                          key: "logout",
+                          icon: <LogoutOutlined />,
+                          label: "退出登录",
+                        },
+                      ]
+                    : [],
                   onClick: async (event: { key: React.Key }) => {
                     const { key } = event;
                     if (key === "logout") {

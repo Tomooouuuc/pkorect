@@ -12,18 +12,17 @@ const UserLoginPage: React.FC = () => {
   const router = useRouter();
 
   const doLogin = async (values: REQUEST.UserLogin) => {
-    try {
-      await signIn("credentials", {
-        redirect: false,
-        userAccount: values.userAccount,
-        userPassword: values.userPassword,
-      });
+    const res = await signIn("credentials", {
+      redirect: false,
+      userAccount: values.userAccount,
+      userPassword: values.userPassword,
+    });
+    if (res?.error) {
+      message.error("登录失败，" + res.error);
+    } else {
       message.success("登录成功");
       router.replace("/");
       form.resetFields();
-    } catch (e: any) {
-      console.log("登录失败");
-      message.error("登录失败，" + e.message);
     }
   };
   return (

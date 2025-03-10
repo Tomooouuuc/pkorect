@@ -13,8 +13,6 @@ export const authOptions: NextAuthOptions = {
       },
       // 报错：
       async authorize(credentials, req) {
-        // console.log("credentials", credentials);
-        // console.log("req", req);
         const userLogin = {
           userAccount: credentials?.userAccount,
           userPassword: credentials?.userPassword,
@@ -30,9 +28,9 @@ export const authOptions: NextAuthOptions = {
             data: userLogin,
           }
         );
+        console.log("user:", user);
         // Add logic here to look up the user from the credentials supplied
         if (user) {
-          console.log("返回的user：", user);
           // Any object returned will be saved in `user` property of the JWT
           return user.data as User;
         } else {
@@ -48,27 +46,14 @@ export const authOptions: NextAuthOptions = {
     signIn: "/user/login",
   },
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      // console.log("signIn", user, account, profile, email, credentials);
-      return true;
-    },
-    async redirect({ url, baseUrl }) {
-      // console.log("redirect", url, baseUrl);
-      return baseUrl;
-    },
     async session({ session, token, user }) {
-      // console.log("session---", session, token, user);
       session.user = token.user;
-      // console.log("session+++", session, token, user);
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
-      // console.log("jwt---", token, user, account, profile, isNewUser);
       if (user) {
         token.user = user as RESPONSE.LoginUser;
       }
-      // console.log("jwt+++", token, user, account, profile, isNewUser);
-      console.log("token的值是：", token);
       return token;
     },
   },

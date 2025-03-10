@@ -12,9 +12,6 @@ declare module "next-auth" {
       user: RESPONSE.LoginUser;
     };
   }
-  interface authorize {
-    user: unknown;
-  }
 }
 
 import "next-auth/jwt";
