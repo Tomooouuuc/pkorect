@@ -11,6 +11,7 @@ export const User = sequelize.define(
     },
     userAccount: {
       type: DataTypes.STRING(256),
+      unique: true,
     },
     userPassword: {
       type: DataTypes.STRING(512),
@@ -69,10 +70,7 @@ export const Picture = sequelize.define(
       type: DataTypes.STRING(512),
     },
     category: {
-      type: DataTypes.STRING(64),
-    },
-    tags: {
-      type: DataTypes.STRING(512),
+      type: DataTypes.BIGINT,
     },
     picSize: {
       type: DataTypes.BIGINT,

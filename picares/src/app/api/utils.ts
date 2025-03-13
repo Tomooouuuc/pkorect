@@ -7,14 +7,22 @@ export const encodePassword = (userPassword: string) => {
 import { ErrorCode, throwUtil } from "@/utils/resultUtils";
 
 export const checkPage = (page: REQUEST.Page) => {
-  if (page.sortOrder) {
+  if (page?.sortOrder) {
     page.sortOrder =
       { ascend: "ASC", descend: "DESC" }[page.sortOrder] ?? "error";
   }
   throwUtil(page.sortOrder === "error", ErrorCode.PARAMS_ERROR);
   return {
     ...page,
-    current: page.current ?? 1,
+    current: page.pageSize * (page.current - 1),
     pageSize: page.pageSize ?? 10,
   };
+};
+
+export const checkBody = (body: any) => {
+  return Object.fromEntries(
+    Object.entries(body).filter(
+      ([_, value]) => value !== null && value !== undefined && value !== ""
+    )
+  );
 };

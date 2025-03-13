@@ -5,7 +5,7 @@ export const nextjsRoutes: RouteRule[] = [
   { nextjsPattern: "/", role: "user" },
   { nextjsPattern: "/admin/user", role: "admin" },
 
-  { nextjsPattern: "/api/user", role: "admin" },
+  { nextjsPattern: "/api/user", methods: ["POST", "PUT"], role: "admin" },
   //   // 动态路由
   //   { nextjsPattern: "/user/[id]", role: "user" },
   //   { nextjsPattern: "/posts/[slug]", role: "guest" },

@@ -28,7 +28,6 @@ export const authOptions: NextAuthOptions = {
             data: userLogin,
           }
         );
-        console.log("user:", user);
         // Add logic here to look up the user from the credentials supplied
         if (user) {
           // Any object returned will be saved in `user` property of the JWT
@@ -45,12 +44,16 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/user/login",
   },
+  session: {
+    strategy: "jwt",
+    maxAge: 60 * 60,
+  },
   callbacks: {
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       session.user = token.user;
       return session;
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user }) {
       if (user) {
         token.user = user as RESPONSE.LoginUser;
       }

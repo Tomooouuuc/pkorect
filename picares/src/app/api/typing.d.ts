@@ -8,6 +8,24 @@ declare namespace MODEL {
     userAccount: string;
     userPassword: string;
   };
+  type UserUpdate = {
+    userName?: string;
+    userAvatar?: string;
+    userProfile?: string;
+    userRole: string;
+  };
+  type PictureUpload = {
+    url: string;
+    name: string;
+    introduction?: string;
+    category: string;
+    picSize?: number;
+    picWidth?: number;
+    picHeight?: number;
+    picScale?: string;
+    picFormat?: string;
+    userId: string;
+  };
 }
 
 declare namespace REQUEST {
@@ -21,17 +39,21 @@ declare namespace REQUEST {
     userPassword: string;
   };
   type UserQuery = {
-    page?: Page;
+    userAccount?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
     createTime?: string;
+    current: number;
+    pageSize: number;
+    sortField?: string;
+    sortOrder?: string;
   };
   type Page = {
     current: number;
     pageSize: number;
-    sortField: string;
-    sortOrder: string;
+    sortField?: string;
+    sortOrder?: string;
   };
 }
 
@@ -53,9 +75,11 @@ declare namespace RESPONSE {
     userProfile?: string;
     userRole: string;
     createTime: string;
+    [key: string]: any;
   };
   type LoginUser = {
     id: string;
+    userAccount: string;
     userName?: string;
     userAvatar?: string;
     userProfile?: string;

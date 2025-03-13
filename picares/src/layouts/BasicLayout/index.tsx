@@ -1,5 +1,6 @@
 "use client";
 import { getAccessMenus } from "@/config/menus";
+import { IMAGE_HOST } from "@/constant/user";
 import {
   GithubFilled,
   InfoCircleFilled,
@@ -23,9 +24,8 @@ interface Props {
 const BasicLayout = ({ children }: Props) => {
   const pathname = usePathname();
   const session = useSession();
-  const userRole = session.data?.user.userRole;
-  //报错：类型“{ update: UpdateSession; data: Session; status: "authenticated"; } | { update: UpdateSession; data: null; status: "unauthenticated" | "loading"; } | { ...; } | { ...; }”上不存在属性“user”。
-  //类型“{ update: UpdateSession; data: Session; status: "authenticated"; }”上不存在属性“user”。ts(2339)
+  const user = session.data?.user;
+  const userRole = user?.userRole;
   const router = useRouter();
   const doLogout = async () => {
     try {
@@ -59,9 +59,11 @@ const BasicLayout = ({ children }: Props) => {
           pathname,
         }}
         avatarProps={{
-          src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
+          src: user?.userAvatar
+            ? IMAGE_HOST + user.userAvatar
+            : "/assets/notLoginUser.png",
           size: "small",
-          title: "七妮妮",
+          title: user?.userName ?? "未登录",
           render: (props, dom) => {
             return (
               <Dropdown

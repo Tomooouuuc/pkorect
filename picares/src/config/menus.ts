@@ -4,8 +4,8 @@ import { roleLevels, UserRole } from "./userRole";
 
 const menus: MenuDataItem[] = [
   {
-    path: "/",
-    name: "主页",
+    path: "/test",
+    name: "图片测试",
   },
   {
     name: "管理",

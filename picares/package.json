@@ -14,13 +14,15 @@
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@types/sequelize": "^4.28.20",
     "antd": "^5.24.2",
+    "antd-img-crop": "^4.24.0",
     "axios": "^1.8.1",
     "mysql2": "^3.12.0",
     "next": "15.2.0",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "sequelize": "^6.37.5"
+    "sequelize": "^6.37.5",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

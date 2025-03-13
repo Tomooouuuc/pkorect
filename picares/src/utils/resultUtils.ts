@@ -26,7 +26,6 @@ export const success = (data: any) => {
 };
 
 export const error = (e: any) => {
-  console.log("发生错误：", e);
   var error = e;
   if (!(e instanceof BusinessException)) {
     error = ErrorCode.SYSTEM_ERROR;
@@ -45,7 +44,6 @@ export const throwUtil = (
 ) => {
   // 参数校验失败后，这里抛出的异常我希望可以被next-auth捕获
   if (condition) {
-    console.log("准备的错误嘛：", errorCode.code);
     throw new BusinessException(errorCode.code, message || errorCode.message);
   }
 };

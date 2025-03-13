@@ -15,16 +15,6 @@ export async function middleware(request: NextRequest) {
       const method = request.method;
       const pathLevel = getAuthLevel(pathname, method);
 
-      if (pathname === "/api/auth/callback/credentials") {
-        console.log(
-          "userLevel:",
-          userLevel,
-          "pathLevel:",
-          pathLevel,
-          "userLevel<pathLevel:",
-          userLevel < pathLevel
-        );
-      }
       if (userLevel < pathLevel) {
         return NextResponse.rewrite(new URL("/404", request.url));
       } else {

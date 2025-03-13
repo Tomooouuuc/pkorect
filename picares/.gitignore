@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/avatar
+/images
 /.pnp
 .pnp.*
 .yarn/*

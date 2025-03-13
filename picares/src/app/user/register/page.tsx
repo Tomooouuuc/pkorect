@@ -19,12 +19,10 @@ const UserRegisterPage: React.FC = () => {
         },
         data: values,
       });
-      console.log("结果是：", res);
       message.success("注册成功，请登录");
       form.resetFields();
       router.push("/user/login");
     } catch (e: any) {
-      console.log("错误是：", e);
       message.error("注册失败，" + e.message);
     }
   };

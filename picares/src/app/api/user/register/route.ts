@@ -2,7 +2,7 @@ import { User } from "@/libs/models";
 import { error, ErrorCode, success, throwUtil } from "@/utils/resultUtils";
 import crypto from "crypto";
 import { NextRequest } from "next/server";
-import { encodePassword } from "../utils";
+import { encodePassword } from "../../utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     );
 
     const password = encodePassword(userPassword);
-    const userName = "游客" + crypto.randomBytes(6).readUInt32BE(0);
+    const userName = "游客" + crypto.randomInt(100000, 999999);
     const data: MODEL.UserRegister = {
       userAccount: userAccount,
       userPassword: password,
