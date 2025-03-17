@@ -31,16 +31,18 @@ const UpdateModal: React.FC<Props> = (props) => {
   const { visible, onCancel, columns, oldData, onSubmit } = props;
   const [tagValue, setTagValue] = useState<TagsValue[]>();
   useEffect(() => {
-    console.log("开始执行");
-    const tagData = oldData?.tags.map((tag) => {
-      return {
-        label: tag.name,
-        value: tag.name,
-      };
-    });
-    console.log("执行结束：", tagData);
-    setTagValue(tagData);
-    console.log("赋值结束：", tagValue);
+    if (visible) {
+      console.log("开始执行");
+      const tagData = oldData?.tags.map((tag) => {
+        return {
+          label: tag.name,
+          value: tag.name,
+        };
+      });
+      console.log("执行结束：", tagData);
+      setTagValue(tagData);
+      console.log("赋值结束：", tagValue);
+    }
   }, [visible]);
 
   const modifiedColumns = columns.map((column) => {
@@ -74,7 +76,10 @@ const UpdateModal: React.FC<Props> = (props) => {
       title={"更新图片"}
       footer={null}
       open={visible}
-      onCancel={onCancel}
+      onCancel={() => {
+        setTagValue([]);
+        onCancel();
+      }}
       destroyOnClose
     >
       <ProTable
@@ -102,7 +107,6 @@ const UpdateModal: React.FC<Props> = (props) => {
               data: values,
             });
             message.success("更新成功");
-            // setTagValue([]);
             onSubmit();
           } catch (e: any) {
             message.error("更新失败");
