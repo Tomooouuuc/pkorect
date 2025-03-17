@@ -6,6 +6,7 @@ import fs from "fs/promises";
 import { NextRequest } from "next/server";
 import path from "path";
 import sharp from "sharp";
+import { checkUser } from "../utils";
 import { updateUser } from "./service";
 
 export async function DELETE(
@@ -37,6 +38,7 @@ export async function PUT(
       userRole: formData.get("userRole") as string,
     };
 
+    checkUser({ ...attr, userAccount });
     if (!avatar) {
       updateUser(attr, id);
     } else {

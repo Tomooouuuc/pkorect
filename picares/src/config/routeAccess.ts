@@ -4,8 +4,20 @@ export const nextjsRoutes: RouteRule[] = [
   // 静态路由
   { nextjsPattern: "/", role: "user" },
   { nextjsPattern: "/admin/user", role: "admin" },
+  { nextjsPattern: "/admin/picture", role: "admin" },
 
   { nextjsPattern: "/api/user", methods: ["POST", "PUT"], role: "admin" },
+
+  {
+    nextjsPattern: "/api/user/[id]",
+    methods: ["PUT", "DELETE"],
+    role: "admin",
+  },
+  { nextjsPattern: "/api/user/query", methods: ["POST"], role: "admin" },
+
+  { nextjsPattern: "/api/picture/query", methods: ["POST"], role: "admin" },
+
+  { nextjsPattern: "/api/categorys", methods: ["GET"], role: "user" },
   //   // 动态路由
   //   { nextjsPattern: "/user/[id]", role: "user" },
   //   { nextjsPattern: "/posts/[slug]", role: "guest" },

@@ -16,7 +16,7 @@ export interface RouteRule {
   role: UserRole;
 }
 
-export const DEFAULT_ROLE: UserRole = "";
+export const DEFAULT_ROLE: UserRole = "ban";
 
 function nextjsPatternToRegex(pattern: string): RegExp {
   if (pattern.includes("[...")) {

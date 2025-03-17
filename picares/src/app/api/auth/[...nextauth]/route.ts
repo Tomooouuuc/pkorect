@@ -11,7 +11,6 @@ export const authOptions: NextAuthOptions = {
         userAccount: { label: "userAccount", type: "text" },
         userPassword: { label: "userPassword", type: "password" },
       },
-      // 报错：
       async authorize(credentials, req) {
         const userLogin = {
           userAccount: credentials?.userAccount,
@@ -49,15 +48,21 @@ export const authOptions: NextAuthOptions = {
     maxAge: 60 * 60,
   },
   callbacks: {
-    async session({ session, token }) {
-      session.user = token.user;
-      return session;
+    async signIn({ user, account, profile, email, credentials }) {
+      if (user.userRole === "ban") {
+        throw new Error("用户已被封禁");
+      }
+      return true;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.user = user as RESPONSE.LoginUser;
+        token.user = user;
       }
       return token;
+    },
+    async session({ session, token }) {
+      session.user = token.user;
+      return session;
     },
   },
 };

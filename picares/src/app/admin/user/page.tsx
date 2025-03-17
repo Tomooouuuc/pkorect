@@ -25,7 +25,7 @@ type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 const levelColors: Record<UserRole, string> = {
   admin: "gold",
   user: "success",
-  "": "default",
+  ban: "danger",
 };
 
 const UserAdminPage = () => {

@@ -5,6 +5,11 @@ import { UserRole } from "./config/userRole";
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  const token = await getToken({ req: request });
+  // if (token) {
+  //   console.log("token::", token);
+  // }
   if (!pathname.startsWith("/_next")) {
     const token = await getToken({ req: request });
 

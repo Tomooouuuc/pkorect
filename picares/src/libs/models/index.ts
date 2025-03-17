@@ -69,7 +69,7 @@ export const Picture = sequelize.define(
     introduction: {
       type: DataTypes.STRING(512),
     },
-    category: {
+    categoryId: {
       type: DataTypes.BIGINT,
     },
     picSize: {
@@ -112,3 +112,112 @@ export const Picture = sequelize.define(
     timestamps: false,
   }
 );
+
+export const Tags = sequelize.define(
+  "tags",
+  {
+    id: {
+      type: DataTypes.BIGINT,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING(128),
+      unique: true,
+    },
+    createTime: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    editTime: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updateTime: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    isDelete: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+    },
+  },
+  {
+    tableName: "tags",
+    timestamps: false,
+  }
+);
+
+export const Categorys = sequelize.define(
+  "categorys",
+  {
+    id: {
+      type: DataTypes.BIGINT,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING(128),
+      unique: true,
+    },
+    createTime: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    editTime: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updateTime: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    isDelete: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+    },
+  },
+  {
+    tableName: "categorys",
+    timestamps: false,
+  }
+);
+
+export const Picturetag = sequelize.define(
+  "picturetag",
+  {
+    tagId: {
+      type: DataTypes.BIGINT,
+    },
+    pictureId: {
+      type: DataTypes.BIGINT,
+    },
+    createTime: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+  },
+  {
+    tableName: "picturetag",
+    timestamps: false,
+  }
+);
+
+User.hasMany(Picture, {
+  foreignKey: "userId",
+  constraints: false,
+});
+Picture.belongsTo(User, {
+  foreignKey: "userId",
+  constraints: false,
+});
+Categorys.hasMany(Picture, {
+  foreignKey: "categoryId",
+  constraints: false,
+});
+Picture.belongsTo(Categorys, {
+  foreignKey: "categoryId",
+  constraints: false,
+});
+Tags.belongsToMany(Picture, { through: Picturetag });
+Picture.belongsToMany(Tags, { through: Picturetag });

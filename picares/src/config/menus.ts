@@ -16,6 +16,11 @@ const menus: MenuDataItem[] = [
         name: "用户管理",
         access: roleLevels.admin,
       },
+      {
+        path: "/admin/picture",
+        name: "图片管理",
+        access: roleLevels.admin,
+      },
     ],
   },
 ];

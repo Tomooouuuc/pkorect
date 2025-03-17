@@ -22,7 +22,11 @@ export const checkPage = (page: REQUEST.Page) => {
 export const checkBody = (body: any) => {
   return Object.fromEntries(
     Object.entries(body).filter(
-      ([_, value]) => value !== null && value !== undefined && value !== ""
+      ([_, value]) =>
+        value !== null &&
+        value !== undefined &&
+        value !== "" &&
+        !(Array.isArray(value) && value.length === 0)
     )
   );
 };

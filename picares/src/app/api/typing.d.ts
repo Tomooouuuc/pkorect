@@ -18,7 +18,7 @@ declare namespace MODEL {
     url: string;
     name: string;
     introduction?: string;
-    category: string;
+    category?: number;
     picSize?: number;
     picWidth?: number;
     picHeight?: number;
@@ -26,6 +26,7 @@ declare namespace MODEL {
     picFormat?: string;
     userId: string;
   };
+  type;
 }
 
 declare namespace REQUEST {
@@ -38,22 +39,24 @@ declare namespace REQUEST {
     userAccount: string;
     userPassword: string;
   };
-  type UserQuery = {
+  type UserQuery = Page & {
     userAccount?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
     createTime?: string;
-    current: number;
-    pageSize: number;
-    sortField?: string;
-    sortOrder?: string;
   };
   type Page = {
     current: number;
     pageSize: number;
     sortField?: string;
     sortOrder?: string;
+  };
+  type PictrueQuery = Page & {
+    name?: string;
+    introduction?: string;
+    userId?: number;
+    createTime?: string;
   };
 }
 
@@ -84,5 +87,32 @@ declare namespace RESPONSE {
     userAvatar?: string;
     userProfile?: string;
     userRole: string;
+  };
+  type CategorysQuery = {
+    id: number;
+    name: string;
+  };
+  type Pictrue = {
+    id: number;
+    url: string;
+    name: string;
+    introduction?: string;
+    picSize?: number;
+    picWidth?: number;
+    picHeight?: number;
+    picScale?: string;
+    picFormat?: string;
+    createTime: string;
+    user: {
+      userAccount: string;
+    };
+    category: {
+      name: string;
+    };
+    tags: [{ name: string }];
+  };
+  type Categorys = {
+    id: number;
+    name: string;
   };
 }

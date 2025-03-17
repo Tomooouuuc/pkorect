@@ -12,6 +12,7 @@ declare module "next-auth" {
       user: RESPONSE.LoginUser;
     };
   }
+  interface User extends RESPONSE.LoginUser {} // 直接继承自定义类型
 }
 
 import "next-auth/jwt";
