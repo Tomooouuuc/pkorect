@@ -19,7 +19,9 @@ const PictureAdminPage = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [currentDate, setCurrentDate] = useState<RESPONSE.Pictrue>();
   const [categoryList, setCategoryList] = useState<RESPONSE.Categorys[]>([]);
-  const [value, setValue] = useState<TagsValue[]>([]);
+  const [value, setValue] = useState<TagsValue[]>([
+    // { label: "艺术", value: "艺术" },
+  ]);
 
   useEffect(() => {
     const getCategory = async () => {
@@ -101,7 +103,7 @@ const PictureAdminPage = () => {
       renderFormItem() {
         return (
           <Select
-            placeholder="请选择分类" // 未选择时的提示文字
+            placeholder="请选择"
             allowClear
             options={categoryList.map((item) => {
               return {
@@ -116,7 +118,7 @@ const PictureAdminPage = () => {
     {
       title: "图片标签",
       dataIndex: "tagsList",
-      valueType: "text",
+      valueType: "select",
       render: (_, record) => {
         return (
           <>
@@ -135,7 +137,7 @@ const PictureAdminPage = () => {
           <DebounceSelect
             mode="multiple"
             value={value}
-            placeholder="请输入标签"
+            placeholder="请输入"
             fetchOptions={(values) => fetchUserList(values)}
             style={{ width: "100%" }}
             onChange={(newValue) => {

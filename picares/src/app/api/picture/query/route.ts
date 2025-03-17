@@ -97,7 +97,6 @@ export async function POST(request: NextRequest) {
         }
       });
     }
-
     const res: RESPONSE.Page<RESPONSE.Pictrue> = {
       records: picture,
       total: count,
