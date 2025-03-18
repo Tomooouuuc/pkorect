@@ -25,7 +25,6 @@ export function DebounceSelect<
   const fetchRef = useRef(0);
 
   const debounceFetcher = useMemo(() => {
-    // console.log("DebounceSelect里面：", props);
     const loadOptions = (value: string) => {
       fetchRef.current += 1;
       const fetchId = fetchRef.current;

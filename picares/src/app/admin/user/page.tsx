@@ -285,8 +285,8 @@ const UserAdminPage = () => {
             })) as RESPONSE.Base<RESPONSE.Page<RESPONSE.User>>;
             return {
               success: code === 0,
-              data: data?.records || [],
-              total: data?.total || 0,
+              data: data?.rows || [],
+              total: data?.count || 0,
             };
           }}
           rowKey="id"

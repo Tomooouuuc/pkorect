@@ -26,7 +26,6 @@ declare namespace MODEL {
     picFormat?: string;
     userId: string;
   };
-  type;
 }
 
 declare namespace REQUEST {
@@ -67,8 +66,8 @@ declare namespace RESPONSE {
     message?: string;
   };
   type Page<T> = {
-    records?: T[];
-    total?: number;
+    rows: T[];
+    count: number;
   };
   type User = {
     id: number;
@@ -114,5 +113,13 @@ declare namespace RESPONSE {
   type Categorys = {
     id: number;
     name: string;
+    createTime: string;
+    pictureCount: number;
+  };
+  type Tags = {
+    id: number;
+    name: string;
+    createTime: string;
+    pictureCount: number;
   };
 }

@@ -19,9 +19,7 @@ const PictureAdminPage = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [currentDate, setCurrentDate] = useState<RESPONSE.Pictrue>();
   const [categoryList, setCategoryList] = useState<RESPONSE.Categorys[]>([]);
-  const [value, setValue] = useState<TagsValue[]>([
-    // { label: "艺术", value: "艺术" },
-  ]);
+  const [value, setValue] = useState<TagsValue[]>([]);
 
   useEffect(() => {
     const getCategory = async () => {
@@ -134,8 +132,9 @@ const PictureAdminPage = () => {
       },
       renderFormItem() {
         return (
+          // 我希望这个组件支持如果选项没有搜索到，就支持用户自己输入
           <DebounceSelect
-            mode="multiple"
+            mode="tags"
             value={value}
             placeholder="请输入"
             fetchOptions={(values) => fetchUserList(values)}
@@ -238,7 +237,6 @@ const PictureAdminPage = () => {
             const tagsList = value.map((item) => {
               return item.value;
             });
-            //这里怎么获取标签数据
             const sortField = Object.keys(sort)?.[0];
             const sortOrder = sort?.[sortField];
             const body = {
@@ -258,8 +256,8 @@ const PictureAdminPage = () => {
             console.log("获取到的数据：", data);
             return {
               success: code === 0,
-              data: data?.records || [],
-              total: data?.total || 0,
+              data: data?.rows || [],
+              total: data?.count || 0,
             };
           }}
           rowKey="id"

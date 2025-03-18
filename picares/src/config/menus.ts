@@ -21,6 +21,16 @@ const menus: MenuDataItem[] = [
         name: "图片管理",
         access: roleLevels.admin,
       },
+      {
+        path: "/admin/categorys",
+        name: "目录管理",
+        access: roleLevels.admin,
+      },
+      {
+        path: "/admin/tags",
+        name: "标签管理",
+        access: roleLevels.admin,
+      },
     ],
   },
 ];

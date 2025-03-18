@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const whereConditions: any[] = [{ isDelete: 0 }];
     for (const [key, value] of Object.entries(filterBody)) {
       if (["userProfile", "userName", "userAccount"].includes(key)) {
-        whereConditions.push({ [key]: { [Op.like]: `%${value}%` } });
+        whereConditions.push({ [key]: { [Op.substring]: value } });
       } else {
         whereConditions.push({ [key]: value });
       }
@@ -26,11 +26,10 @@ export async function POST(request: NextRequest) {
     if (page.sortField && page.sortOrder) {
       query.order = [[page.sortField, page.sortOrder]];
     }
-    const count = (await User.count(query)) as unknown as number;
     query.limit = page.pageSize;
     query.offset = page.current;
     //报错：对象字面量只能指定已知属性，并且“query”不在类型“FindOptions<any>”中。ts(2353)
-    const user = (await User.findAll({
+    const user = (await User.findAndCountAll({
       attributes: [
         "id",
         "userAccount",
@@ -41,10 +40,10 @@ export async function POST(request: NextRequest) {
         "createTime",
       ],
       ...query,
-    })) as unknown as RESPONSE.User[];
+    })) as unknown as RESPONSE.Page<RESPONSE.User>;
     const res: RESPONSE.Page<RESPONSE.User> = {
-      records: user,
-      total: count,
+      rows: user.rows,
+      count: user.count,
     };
     return success(res);
   } catch (e: any) {

@@ -52,7 +52,7 @@ const UpdateModal: React.FC<Props> = (props) => {
         renderFormItem() {
           return (
             <DebounceSelect
-              mode="multiple"
+              mode="tags"
               value={tagValue}
               placeholder="请输入"
               fetchOptions={(values) => fetchUserList(values)}
@@ -98,13 +98,11 @@ const UpdateModal: React.FC<Props> = (props) => {
           },
         }}
         onSubmit={async (values: RESPONSE.Pictrue) => {
-          console.log("提交的数据：", values);
-          console.log("旧数据：", oldData);
-          console.log("标签数据是：", tagValue);
+          const tags = tagValue?.map((tag) => tag.value);
           try {
             await request(`/api/picture/${oldData?.id}`, {
               method: "PUT",
-              data: values,
+              data: { ...values, tagsList: tags },
             });
             message.success("更新成功");
             onSubmit();

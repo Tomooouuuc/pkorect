@@ -5,6 +5,8 @@ export const nextjsRoutes: RouteRule[] = [
   { nextjsPattern: "/", role: "user" },
   { nextjsPattern: "/admin/user", role: "admin" },
   { nextjsPattern: "/admin/picture", role: "admin" },
+  { nextjsPattern: "/admin/categorys", role: "admin" },
+  { nextjsPattern: "/admin/tags", role: "admin" },
 
   { nextjsPattern: "/api/user", methods: ["POST", "PUT"], role: "admin" },
 

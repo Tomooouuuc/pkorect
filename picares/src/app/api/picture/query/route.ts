@@ -29,11 +29,9 @@ export async function POST(request: NextRequest) {
       } else if (["categoryName"].includes(key)) {
         categoryConditions.push({ ["name"]: { [Op.substring]: value } });
       } else if (["tagsList"].includes(key)) {
-        // 我想将这个查询条件放在外层
         tagsConditions.push({ ["name"]: { [Op.in]: value } });
       }
     }
-    //'$Instruments.size$': { [Op.ne]: 'small' },
     const query: any = {
       where: { [Op.and]: pictureConditions },
     };
@@ -48,16 +46,9 @@ export async function POST(request: NextRequest) {
     };
     const includeTags: any = {
       model: Tags,
-      // where: { [Op.and]: tagsConditions },
       through: { attributes: [] },
     };
     const include: any = [includeUser, includeCategorys, includeTags];
-
-    const count = (await Picture.count({
-      ...query,
-      include,
-      distinct: true,
-    })) as unknown as number;
 
     includeUser.attributes = ["userAccount"];
     includeCategorys.attributes = ["name"];
@@ -69,7 +60,7 @@ export async function POST(request: NextRequest) {
     query.limit = page.pageSize;
     query.offset = page.current;
 
-    var picture = (await Picture.findAll({
+    const picture = (await Picture.findAndCountAll({
       attributes: [
         "id",
         "url",
@@ -84,12 +75,13 @@ export async function POST(request: NextRequest) {
       ],
       ...query,
       include,
-    })) as unknown as RESPONSE.Pictrue[];
-    console.log("veliveli");
+      distinct: true,
+    })) as unknown as RESPONSE.Page<RESPONSE.Pictrue>;
+
     if ("tagsList" in filterBody) {
       const { tagsList } = filterBody;
 
-      picture = picture.filter((item) => {
+      picture.rows = picture.rows.filter((item) => {
         if (Array.isArray(tagsList)) {
           return tagsList.every((tagName) =>
             item.tags.some((tag) => tag.name === tagName)
@@ -98,8 +90,8 @@ export async function POST(request: NextRequest) {
       });
     }
     const res: RESPONSE.Page<RESPONSE.Pictrue> = {
-      records: picture,
-      total: count,
+      rows: picture.rows,
+      count: picture.count,
     };
     return success(res);
   } catch (e: any) {
