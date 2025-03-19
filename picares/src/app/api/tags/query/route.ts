@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
           model: Picture,
           attributes: [],
           required: false,
-          through: { attributes: [] }, // 添加此行排除中间表字段
+          through: { attributes: [] },
         },
       ],
       group: ["Tags.id"],

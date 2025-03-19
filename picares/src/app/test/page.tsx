@@ -1,230 +1,190 @@
-import type { SelectProps } from "antd";
-import { Select, Spin } from "antd";
-import debounce from "lodash/debounce";
-import React, { useMemo, useRef, useState } from "react";
+"use client";
+import request from "@/libs/request";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import type { GetProp, UploadProps } from "antd";
+import { Button, Form, Input, message, Select, Upload } from "antd";
+import React, { useEffect, useState } from "react";
+import { DebounceSelect } from "../admin/components/DebounceSelect";
 
-export interface DebounceSelectProps<ValueType = any>
-  extends Omit<SelectProps<ValueType | ValueType[]>, "options" | "children"> {
-  fetchOptions: (search: string) => Promise<ValueType[]>;
-  debounceTimeout?: number;
-}
-
-function DebounceSelect<
-  ValueType extends {
-    key?: string;
-    label: React.ReactNode;
-    value: string | number;
-  } = any,
->({
-  fetchOptions,
-  debounceTimeout = 800,
-  ...props
-}: DebounceSelectProps<ValueType>) {
-  const [fetching, setFetching] = useState(false);
-  const [options, setOptions] = useState<ValueType[]>([]);
-  const fetchRef = useRef(0);
-
-  const debounceFetcher = useMemo(() => {
-    const loadOptions = (value: string) => {
-      fetchRef.current += 1;
-      const fetchId = fetchRef.current;
-      setOptions([]);
-      setFetching(true);
-
-      fetchOptions(value).then((newOptions) => {
-        if (fetchId !== fetchRef.current) {
-          // for fetch callback order
-          return;
-        }
-
-        setOptions(newOptions);
-        setFetching(false);
-      });
-    };
-
-    return debounce(loadOptions, debounceTimeout);
-  }, [fetchOptions, debounceTimeout]);
-
-  return (
-    <Select
-      labelInValue
-      filterOption={false}
-      onSearch={debounceFetcher}
-      notFoundContent={fetching ? <Spin size="small" /> : null}
-      {...props}
-      options={options}
-    />
-  );
-}
-
-// Usage of DebounceSelect
-interface UserValue {
+interface TagsValue {
   label: string;
   value: string;
 }
 
-async function fetchUserList(username: string): Promise<UserValue[]> {
-  console.log("fetching user", username);
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
-  return fetch("https://randomuser.me/api/?results=5")
-    .then((response) => response.json())
-    .then((body) =>
-      body.results.map(
-        (user: {
-          name: { first: string; last: string };
-          login: { username: string };
-        }) => ({
-          label: `${user.name.first} ${user.name.last}`,
-          value: user.login.username,
-        })
-      )
-    );
-}
+const getBase64 = (img: FileType, callback: (url: string) => void) => {
+  const reader = new FileReader();
+  reader.addEventListener("load", () => callback(reader.result as string));
+  reader.readAsDataURL(img);
+};
+
+const beforeUpload = (file: FileType) => {
+  const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+  if (!isJpgOrPng) {
+    message.error("You can only upload JPG/PNG file!");
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error("Image must smaller than 2MB!");
+  }
+  return isJpgOrPng && isLt2M;
+};
 
 const App: React.FC = () => {
-  const [value, setValue] = useState<UserValue[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>();
+  const [file, setFile] = useState(null);
+  const [categoryList, setCategoryList] = useState<RESPONSE.Categorys[]>([]);
+  const [value, setValue] = useState<TagsValue[]>([]);
+
+  useEffect(() => {
+    const getCategory = async () => {
+      try {
+        const res = await request("/api/categorys", { method: "GET" });
+        setCategoryList(res.data);
+      } catch (e: any) {
+        message.error("获取图片分类失败");
+      }
+    };
+    getCategory();
+  }, []);
+
+  const fetchUserList = async (name: string) => {
+    try {
+      const res = await request(`/api/tags?name=${name}`);
+      return res.data.map((item: any) => ({
+        label: item.name,
+        value: item.name,
+      }));
+    } catch (e: any) {
+      message.error("获取标签失败");
+    }
+  };
+
+  const handleChange: UploadProps["onChange"] = (info: any) => {
+    if (info.file.status === "uploading") {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === "done") {
+      setFile(info.file.originFileObj);
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj as FileType, (url) => {
+        setLoading(false);
+        setImageUrl(url);
+      });
+    }
+  };
+
+  const uploadButton = (
+    <button style={{ border: 0, background: "none" }} type="button">
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
+
+  const onFinish = async (values: any) => {
+    console.log("values:", values);
+    const formData = new FormData();
+    if (!file) {
+      message.error("请上传图片");
+      return;
+    }
+    formData.append("image", file);
+
+    Object.keys(values).forEach((key) => {
+      if (key === "tags") {
+        const tagsValue = values.tags.map((tag: any) => tag.value);
+        console.log("tagsValue:", tagsValue);
+        formData.append(key, tagsValue);
+      } else {
+        formData.append(key, values[key]);
+      }
+    });
+    console.log("formData:", formData);
+    try {
+      await request("/api/picture/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        data: formData,
+      });
+      message.success("上传成功");
+      setFile(null);
+      setImageUrl("");
+    } catch (e: any) {
+      message.error("上传失败，" + e.message);
+    }
+  };
 
   return (
-    <DebounceSelect
-      mode="multiple"
-      value={value}
-      placeholder="Select users"
-      fetchOptions={fetchUserList}
-      style={{ width: "100%" }}
-      onChange={(newValue) => {
-        if (Array.isArray(newValue)) {
-          setValue(newValue);
-        }
-      }}
-    />
+    <Form
+      name="basic"
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 16 }}
+      style={{ maxWidth: 600 }}
+      initialValues={{ remember: true }}
+      onFinish={onFinish}
+      autoComplete="off"
+    >
+      <Form.Item label="上传图片">
+        <Upload
+          name="image"
+          listType="picture-card"
+          className="avatar-uploader"
+          showUploadList={false}
+          beforeUpload={beforeUpload}
+          onChange={handleChange}
+        >
+          {imageUrl ? (
+            <img src={imageUrl} alt="image" style={{ width: "100%" }} />
+          ) : (
+            uploadButton
+          )}
+        </Upload>
+      </Form.Item>
+      <Form.Item label="图片名称" name="name">
+        <Input />
+      </Form.Item>
+      <Form.Item label="图片简介" name="introduction">
+        <Input />
+      </Form.Item>
+      <Form.Item label="图片目录" name="category">
+        <Select
+          placeholder="请选择"
+          allowClear
+          options={categoryList.map((item) => {
+            return {
+              value: item.name,
+              label: item.name,
+            };
+          })}
+        />
+      </Form.Item>
+      <Form.Item label="图片标签" name="tags">
+        <DebounceSelect
+          mode="tags"
+          value={value}
+          placeholder="请输入"
+          fetchOptions={(values) => fetchUserList(values)}
+          style={{ width: "100%" }}
+          onChange={(newValue) => {
+            if (Array.isArray(newValue)) {
+              console.log("newValue:", newValue);
+              setValue(newValue);
+            }
+          }}
+        />
+      </Form.Item>
+      <Form.Item label={null}>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 
 export default App;
-
-// "use client";
-// import request from "@/libs/request";
-// import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-// import type { GetProp, UploadFile, UploadProps } from "antd";
-// import { Button, Flex, Form, Input, message, Upload } from "antd";
-// import ImgCrop from "antd-img-crop";
-// import { Image as AntdImage } from "antd/lib";
-// import React, { useState } from "react";
-
-// type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-
-// const App: React.FC = () => {
-//   const [file, setFile] = useState(null);
-//   const [loading, setLoading] = useState(false);
-//   const [imageUrl, setImageUrl] = useState<string>();
-
-//   const doSubmit = async (values: any) => {
-//     const formData = new FormData();
-//     if (file) {
-//       formData.append("image", file);
-//     }
-//     Object.keys(values).forEach((key) => {
-//       if (key !== "userAvatar" && values[key]) {
-//         formData.append(key, values[key]);
-//       }
-//     });
-//     try {
-//       await request(`/api/picture/upload`, {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "multipart/form-data",
-//         },
-//         data: formData,
-//       });
-//       message.success("更新成功");
-//       setFile(null);
-//       setImageUrl("");
-//     } catch (e: any) {
-//       message.error("更新失败，" + e.message);
-//     }
-//   };
-//   const getBase64 = (img: FileType, callback: (url: string) => void) => {
-//     const reader = new FileReader();
-//     reader.addEventListener("load", () => callback(reader.result as string));
-//     reader.readAsDataURL(img);
-//   };
-
-//   const onPreview = async (file: UploadFile) => {
-//     let src = file.url as string;
-//     if (!src) {
-//       src = await new Promise((resolve) => {
-//         const reader = new FileReader();
-//         reader.readAsDataURL(file.originFileObj as FileType);
-//         reader.onload = () => resolve(reader.result as string);
-//       });
-//     }
-//     const image = new Image();
-//     image.src = src;
-//     const imgWindow = window.open(src);
-//     imgWindow?.document.write(image.outerHTML);
-//   };
-
-//   const handleChange = (info: any) => {
-//     if (info.file.status === "uploading") {
-//       setLoading(true);
-//       return;
-//     }
-//     if (info.file.status === "done") {
-//       setFile(info.file.originFileObj);
-//       getBase64(info.file.originFileObj as FileType, (url) => {
-//         setLoading(false);
-//         setImageUrl(url);
-//       });
-//     }
-//   };
-
-//   const uploadButton = (
-//     <button style={{ border: 0, background: "none" }} type="button">
-//       {loading ? <PlusOutlined /> : <LoadingOutlined />}
-//       <div style={{ marginTop: 8 }}>Upload</div>
-//     </button>
-//   );
-
-//   return (
-//     <Flex gap="middle" wrap>
-//       <Form onFinish={(values) => doSubmit(values)}>
-//         <ImgCrop>
-//           <Upload
-//             listType="picture-card"
-//             showUploadList={false}
-//             onChange={handleChange}
-//             onPreview={onPreview}
-//           >
-//             {loading ? (
-//               <LoadingOutlined />
-//             ) : (
-//               <AntdImage
-//                 src={imageUrl}
-//                 alt="image"
-//                 style={{ width: "100%" }}
-//                 preview={false}
-//               />
-//             )}
-//           </Upload>
-//         </ImgCrop>
-//         <Form.Item label="name" name="name">
-//           <Input />
-//         </Form.Item>
-//         {/* <Form.Item
-//           label="userAccount"
-//           name="userAccount"
-//           rules={[{ required: true, message: "Please input your username!" }]}
-//         >
-//           <Input />
-//         </Form.Item> */}
-//         <Form.Item label={null}>
-//           <Button type="primary" htmlType="submit">
-//             Submit
-//           </Button>
-//         </Form.Item>
-//       </Form>
-//     </Flex>
-//   );
-// };
-
-// export default App;

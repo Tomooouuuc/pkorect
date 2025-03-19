@@ -18,7 +18,7 @@ declare namespace MODEL {
     url: string;
     name: string;
     introduction?: string;
-    category?: number;
+    categoryId?: number;
     picSize?: number;
     picWidth?: number;
     picHeight?: number;

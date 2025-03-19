@@ -25,7 +25,6 @@ export async function PUT(
   const { id } = await params;
   const body = await request.json();
 
-  console.log("拿到的提交的值：", body);
   checkPicture(body);
   const { categoryName, tagsList, ...restBody } = body;
 

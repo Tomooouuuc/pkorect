@@ -24,7 +24,7 @@ const PictureAdminPage = () => {
   useEffect(() => {
     const getCategory = async () => {
       try {
-        const res = await request("/api/categorys");
+        const res = await request("/api/categorys", { method: "GET" });
         setCategoryList(res.data);
       } catch (e: any) {
         message.error("获取分类失败");

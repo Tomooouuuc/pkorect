@@ -8,7 +8,6 @@ import { checkBody, checkPage } from "../../utils";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log("请求体是：", body);
     const { current, pageSize, sortField, sortOrder, ...restBody } = body;
     const page = checkPage({ current, pageSize, sortField, sortOrder });
     const filterBody = checkBody(restBody);
@@ -21,7 +20,6 @@ export async function POST(request: NextRequest) {
     const query: any = {
       where: { [Op.and]: whereConditions },
     };
-    console.log("查询条件是：");
 
     const count = (await Categorys.count({
       ...query,
@@ -32,7 +30,6 @@ export async function POST(request: NextRequest) {
     }
     query.limit = page.pageSize;
     query.offset = page.current;
-    // 这里有问题
     const data = (await Categorys.findAll({
       attributes: [
         "id",
@@ -49,9 +46,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       group: ["Categorys.id"],
-      subQuery: false, // 关键参数：禁止子查询包裹
+      subQuery: false,
     })) as unknown as RESPONSE.Categorys[];
-    console.log("结果是：", data);
     const res: RESPONSE.Page<RESPONSE.Categorys> = {
       rows: data,
       count: count,
