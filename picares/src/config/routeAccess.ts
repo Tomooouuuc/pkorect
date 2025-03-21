@@ -3,6 +3,7 @@ import { RouteRule } from "./access";
 export const nextjsRoutes: RouteRule[] = [
   // 静态路由
   { nextjsPattern: "/", role: "user" },
+  { nextjsPattern: "/test", role: "user" },
   { nextjsPattern: "/admin/user", role: "admin" },
   { nextjsPattern: "/admin/picture", role: "admin" },
   { nextjsPattern: "/admin/categorys", role: "admin" },

@@ -3,15 +3,18 @@ import { Categorys, Picture, Picturetag, Tags } from "@/libs/models";
 import { error, ErrorCode, success, throwUtil } from "@/utils/resultUtils";
 import crypto from "crypto";
 import fs from "fs/promises";
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 import path from "path";
 import { Op } from "sequelize";
 import sharp from "sharp";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getToken({ req: request });
+    const session = await getServerSession(authOptions);
+    // 登录后这里拿到的session.user为什么是空的？？？
+    console.log("session", session?.user);
     const userAccount = session?.user.userAccount;
 
     const userId = session?.user.id;
@@ -63,7 +66,7 @@ export async function POST(request: NextRequest) {
         attributes: ["id"],
         where: { name: category },
       })) as unknown as RESPONSE.CategorysQuery;
-      throwUtil(!categoryRes, ErrorCode.PARAMS_ERROR, "分类不存在");
+      throwUtil(!categoryRes, ErrorCode.PARAMS_ERROR, "目录不存在");
       data.categoryId = categoryRes.id;
 
       const findTags = (await Tags.findAll({

@@ -96,10 +96,10 @@ declare namespace RESPONSE {
     url: string;
     name: string;
     introduction?: string;
-    picSize?: number;
-    picWidth?: number;
-    picHeight?: number;
-    picScale?: string;
+    picSize: number;
+    picWidth: number;
+    picHeight: number;
+    picScale: number;
     picFormat?: string;
     createTime: string;
     user: {

@@ -6,6 +6,7 @@ const menus: MenuDataItem[] = [
   {
     path: "/test",
     name: "图片测试",
+    access: roleLevels.user,
   },
   {
     name: "管理",

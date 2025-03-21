@@ -44,7 +44,7 @@ const App: React.FC = () => {
         const res = await request("/api/categorys", { method: "GET" });
         setCategoryList(res.data);
       } catch (e: any) {
-        message.error("获取图片分类失败");
+        message.error("获取图片目录失败");
       }
     };
     getCategory();

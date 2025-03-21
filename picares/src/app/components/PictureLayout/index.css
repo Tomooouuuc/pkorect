@@ -1,1 +1,3 @@
-.picture_layout {}
+.ant-tabs-tabpane-active {
+    width: 1200px;
+}

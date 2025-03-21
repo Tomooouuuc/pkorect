@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const picture = (await Picture.findAndCountAll({
-      attributes: ["id", "url", "name"],
+      attributes: ["id", "url", "picWidth", "picHeight", "picScale", "name"],
       include: [
         {
           model: Categorys,

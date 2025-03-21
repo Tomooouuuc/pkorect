@@ -27,7 +27,7 @@ const PictureAdminPage = () => {
         const res = await request("/api/categorys", { method: "GET" });
         setCategoryList(res.data);
       } catch (e: any) {
-        message.error("获取分类失败");
+        message.error("获取目录失败");
       }
     };
     getCategory();

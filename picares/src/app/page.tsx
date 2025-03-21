@@ -14,7 +14,7 @@ export default function Home() {
         const res = await request("/api/categorys", { method: "GET" });
         setCategoryList(res.data);
       } catch (e: any) {
-        message.error("获取分类失败");
+        message.error("获取目录失败");
       }
     };
     getCategory();
@@ -24,7 +24,7 @@ export default function Home() {
       <Tabs
         defaultActiveKey="1"
         tabPosition={"top"}
-        style={{ height: 220, justifySelf: "start" }}
+        style={{ justifySelf: "start", width: "100%" }}
         items={categoryList.map((category) => {
           return {
             label: category.name,
