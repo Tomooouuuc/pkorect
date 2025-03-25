@@ -12,14 +12,12 @@ export default function Home() {
   const [pictureList, setPictureList] = useState<RESPONSE.Pictrue[]>([]);
   const [name, setName] = useState<string>("全部");
   const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getCategory = async () => {
       try {
         const res = await request("/api/categorys", { method: "GET" });
         setCategoryList([{ name: "全部" }, ...res.data]);
-        // setName(res.data[0].name);
       } catch (e: any) {
         message.error("获取目录失败");
       }
@@ -45,8 +43,7 @@ export default function Home() {
   }, [name]);
 
   const loadMoreData = async (id: number) => {
-    if (isLoading || !hasMore) return;
-    setIsLoading(true);
+    if (!hasMore) return;
     var categoryName = name;
     if (name === "全部") {
       categoryName = "";
@@ -56,11 +53,10 @@ export default function Home() {
         `/api/picture?category=${categoryName}&id=${id}`
       );
       setPictureList((prev) => [...prev, ...newData.data]);
+      console.log("hasMore", newData.data.length > 0);
       setHasMore(newData.data.length > 0);
     } catch (error) {
-      console.error("加载失败", error);
-    } finally {
-      setIsLoading(false);
+      message.error("加载失败");
     }
   };
   return (
@@ -116,7 +112,6 @@ export default function Home() {
                 )}
                 onLoadMore={loadMoreData}
                 hasMore={hasMore}
-                isLoading={isLoading}
               />
             ),
           };

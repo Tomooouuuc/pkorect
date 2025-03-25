@@ -6,18 +6,21 @@ interface Props {
   pictureList: RESPONSE.Pictrue[];
   renderItem: (picture: RESPONSE.Pictrue) => React.ReactNode;
   onLoadMore: (id: number) => void;
-  hasMore: boolean;
-  isLoading: boolean;
+  hasMore?: boolean;
 }
 
-const PictureLayout: React.FC<Props> = (props) => {
-  const { pictureList, renderItem, onLoadMore, hasMore, isLoading } = props;
-
+const PictureLayout: React.FC<Props> = ({
+  pictureList,
+  renderItem,
+  onLoadMore,
+  hasMore = true,
+}) => {
   const [cols, setCols] = useState(6);
   const [colList, setColList] = useState(
     Array.from({ length: cols }, () => new Array<RESPONSE.Pictrue>())
   );
   const [lastPicture, setLastPicture] = useState<number>(-1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -59,10 +62,12 @@ const PictureLayout: React.FC<Props> = (props) => {
 
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [lastPicture]);
+  }, [hasMore, lastPicture]);
 
   useEffect(() => {
     const getColList = () => {
+      setIsLoading(true);
+
       const tmpColList = Array.from(
         { length: cols },
         () => new Array<RESPONSE.Pictrue>()
@@ -82,7 +87,10 @@ const PictureLayout: React.FC<Props> = (props) => {
 
       if (pictureList.length > 0) {
         setLastPicture(pictureList[pictureList.length - 1].id);
+      } else {
+        setLastPicture(-1);
       }
+      setIsLoading(false);
     };
     getColList();
   }, [cols, pictureList]);

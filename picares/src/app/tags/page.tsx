@@ -11,7 +11,6 @@ const TagsPage = () => {
   const name = useSearchParams().get("name");
   const [pictureList, setPictureList] = useState<RESPONSE.Pictrue[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getPicture = async () => {
@@ -26,16 +25,13 @@ const TagsPage = () => {
   }, []);
 
   const loadMoreData = async (id: number) => {
-    if (isLoading || !hasMore) return;
-    setIsLoading(true);
+    if (!hasMore) return;
     try {
       const newData = await request(`/api/tags/picture?name=${name}&id=${id}`);
       setPictureList((prev) => [...prev, ...newData.data]);
       setHasMore(newData.data.length > 0);
     } catch (error) {
-      console.error("加载失败", error);
-    } finally {
-      setIsLoading(false);
+      message.error("加载失败");
     }
   };
 
@@ -79,7 +75,6 @@ const TagsPage = () => {
         )}
         onLoadMore={loadMoreData}
         hasMore={hasMore}
-        isLoading={isLoading}
       />
     </div>
   );

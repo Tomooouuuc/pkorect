@@ -2,7 +2,11 @@
 import PictureLayout from "@/app/components/PictureLayout";
 import { IMAGE_HOST } from "@/constant/user";
 import request from "@/libs/request";
-import { LoadingOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
 import { Card, Flex, Image, Menu, message, Space, Tag, Typography } from "antd";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -15,15 +19,12 @@ interface Props {
 }
 
 const UserPicture: React.FC<Props> = ({ isUser, name, id }) => {
-  useEffect(() => {}, []);
-  const [currentPicture, setCurrentPicture] = useState<RESPONSE.Pictrue[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [pictureList, setPictureList] = useState<RESPONSE.Pictrue[]>([]);
-  const [menuName, setMenuName] = useState<number>(1);
-
+  const [menuName, setMenuName] = useState<string>("1");
   useEffect(() => {
     if (!name) return;
+    setHasMore(true);
     const getPicture = async () => {
       try {
         const res = await request(
@@ -38,8 +39,7 @@ const UserPicture: React.FC<Props> = ({ isUser, name, id }) => {
   }, [menuName, name]);
 
   const loadMoreData = async (pictureId: number) => {
-    if (isLoading || !hasMore) return;
-    setIsLoading(true);
+    if (!hasMore || !name) return;
     try {
       const newData = await request(
         `/api/picture/user?id=${id}&category=${name}&reviewStatus=${menuName}&pictureId=${pictureId}`
@@ -48,8 +48,6 @@ const UserPicture: React.FC<Props> = ({ isUser, name, id }) => {
       setHasMore(newData.data.length > 0);
     } catch (error) {
       message.error("加载失败");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -59,8 +57,7 @@ const UserPicture: React.FC<Props> = ({ isUser, name, id }) => {
         {isUser && (
           <Menu
             onClick={(value) => {
-              const key = value.key as unknown as number;
-              setMenuName(key);
+              setMenuName(value.key);
             }}
             style={{ width: 200 }}
             defaultSelectedKeys={["1"]}
@@ -68,17 +65,17 @@ const UserPicture: React.FC<Props> = ({ isUser, name, id }) => {
             items={[
               {
                 key: "1",
-                icon: <LoadingOutlined />,
+                icon: <CheckCircleOutlined />,
                 label: "审核通过",
               },
               {
                 key: "0",
-                icon: <LoadingOutlined />,
+                icon: <ClockCircleOutlined />,
                 label: "未审核",
               },
               {
                 key: "2",
-                icon: <LoadingOutlined />,
+                icon: <CloseCircleOutlined />,
                 label: "审核拒绝",
               },
             ]}
@@ -123,7 +120,6 @@ const UserPicture: React.FC<Props> = ({ isUser, name, id }) => {
               )}
               onLoadMore={loadMoreData}
               hasMore={hasMore}
-              isLoading={isLoading}
             />
           )}
         </div>

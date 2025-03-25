@@ -80,15 +80,4 @@ create table if not exists tags
 
 
 
-ALTER TABLE picture  
-    -- 添加新列  
-    ADD COLUMN reviewStatus INT DEFAULT 0 NOT NULL COMMENT '审核状态：0-待审核; 1-通过; 2-拒绝';  
-  
--- 创建基于 reviewStatus 列的索引  
-CREATE INDEX idx_reviewStatus ON picture (reviewStatus);
-
-
-
-
-
 

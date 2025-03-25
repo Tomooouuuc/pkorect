@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       attributes: ["id", "url", "picScale", "name"],
       include,
       where,
-      limit: 10,
+      limit: 20,
       subQuery: true,
     })) as unknown as RESPONSE.Pictrue[];
     return success(picture);
