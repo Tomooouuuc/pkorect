@@ -4,6 +4,7 @@
 /node_modules
 /avatar
 /images
+/image
 /.pnp
 .pnp.*
 .yarn/*
