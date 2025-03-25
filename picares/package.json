@@ -16,6 +16,8 @@
     "antd": "^5.24.2",
     "antd-img-crop": "^4.24.0",
     "axios": "^1.8.1",
+    "cheerio": "^1.0.0",
+    "file-saver": "^2.0.5",
     "mysql2": "^3.12.0",
     "next": "15.2.0",
     "next-auth": "^4.24.11",
@@ -26,6 +28,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

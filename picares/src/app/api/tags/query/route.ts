@@ -8,7 +8,6 @@ import { checkBody, checkPage } from "../../utils";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log("body", body);
     const { current, pageSize, sortField, sortOrder, ...restBody } = body;
     const page = checkPage({ current, pageSize, sortField, sortOrder });
     const filterBody = checkBody(restBody);
@@ -50,7 +49,6 @@ export async function POST(request: NextRequest) {
       group: ["Tags.id"],
       subQuery: false,
     })) as unknown as RESPONSE.Tags[];
-    console.log("结果是：", data);
     const res: RESPONSE.Page<RESPONSE.Tags> = {
       rows: data,
       count: count,

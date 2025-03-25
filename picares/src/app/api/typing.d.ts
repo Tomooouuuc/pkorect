@@ -15,7 +15,7 @@ declare namespace MODEL {
     userRole: string;
   };
   type PictureUpload = {
-    url: string;
+    url?: string;
     name: string;
     introduction?: string;
     categoryId?: number;
@@ -24,7 +24,8 @@ declare namespace MODEL {
     picHeight?: number;
     picScale?: string;
     picFormat?: string;
-    userId: string;
+    reviewStatus: number;
+    userId?: string;
   };
 }
 
@@ -102,8 +103,12 @@ declare namespace RESPONSE {
     picScale: number;
     picFormat?: string;
     createTime: string;
+    reviewStatus: number;
     user: {
+      id: number;
       userAccount: string;
+      userAvatar?: string;
+      userName?: string;
     };
     category: {
       name: string;
@@ -121,5 +126,9 @@ declare namespace RESPONSE {
     name: string;
     createTime: string;
     pictureCount: number;
+  };
+  type MenuPicture = {
+    [key: number]: RESPONSE.Pictrue[];
+    reviewStatus: [Pictrue];
   };
 }

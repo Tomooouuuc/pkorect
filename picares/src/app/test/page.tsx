@@ -85,7 +85,6 @@ const App: React.FC = () => {
   );
 
   const onFinish = async (values: any) => {
-    console.log("values:", values);
     const formData = new FormData();
     if (!file) {
       message.error("请上传图片");
@@ -96,13 +95,11 @@ const App: React.FC = () => {
     Object.keys(values).forEach((key) => {
       if (key === "tags") {
         const tagsValue = values.tags.map((tag: any) => tag.value);
-        console.log("tagsValue:", tagsValue);
         formData.append(key, tagsValue);
       } else {
         formData.append(key, values[key]);
       }
     });
-    console.log("formData:", formData);
     try {
       await request("/api/picture/upload", {
         method: "POST",
@@ -172,7 +169,6 @@ const App: React.FC = () => {
           style={{ width: "100%" }}
           onChange={(newValue) => {
             if (Array.isArray(newValue)) {
-              console.log("newValue:", newValue);
               setValue(newValue);
             }
           }}

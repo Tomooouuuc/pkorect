@@ -1,38 +1,26 @@
 "use client";
 
-import { IMAGE_HOST } from "@/constant/user";
-import request from "@/libs/request";
-import { Card, Flex, message, Tag, Typography } from "antd";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface Props {
-  name: string;
+  pictureList: RESPONSE.Pictrue[];
+  renderItem: (picture: RESPONSE.Pictrue) => React.ReactNode;
+  onLoadMore: (id: number) => void;
+  hasMore: boolean;
+  isLoading: boolean;
 }
 
 const PictureLayout: React.FC<Props> = (props) => {
-  const { name } = props;
-  const [pictureList, setPictureList] = useState<RESPONSE.Pictrue[]>([]);
+  const { pictureList, renderItem, onLoadMore, hasMore, isLoading } = props;
 
   const [cols, setCols] = useState(6);
   const [colList, setColList] = useState(
     Array.from({ length: cols }, () => new Array<RESPONSE.Pictrue>())
   );
+  const [lastPicture, setLastPicture] = useState<number>(-1);
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  console.log("name:", name);
-  useEffect(() => {
-    async function getPicture() {
-      try {
-        const res = await request(`/api/picture?category=${name}`);
-        console.log("获取到的图片列表：:", res);
-        setPictureList(res.data.rows);
-      } catch (e: any) {
-        message.error("获取图片列表失败");
-      }
-    }
-    getPicture();
-  }, []);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateCols = () => {
@@ -53,6 +41,27 @@ const PictureLayout: React.FC<Props> = (props) => {
   }, []);
 
   useEffect(() => {
+    if (!sentinelRef.current || !hasMore || lastPicture === -1) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !isLoading) {
+          onLoadMore(lastPicture);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px 0px 100px 0px",
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [lastPicture]);
+
+  useEffect(() => {
     const getColList = () => {
       const tmpColList = Array.from(
         { length: cols },
@@ -69,59 +78,39 @@ const PictureLayout: React.FC<Props> = (props) => {
         tmpColList[minIndex].push(picture);
         heights[minIndex] += 1.0 / picture.picScale;
       });
-      console.log("tmpColList:", tmpColList);
       setColList(tmpColList);
+
+      if (pictureList.length > 0) {
+        setLastPicture(pictureList[pictureList.length - 1].id);
+      }
     };
     getColList();
-    const testList = () => {
-      colList.map((col, index) => {
-        console.log("col:", col, index);
-      });
-    };
-    testList();
   }, [cols, pictureList]);
 
   return (
-    <div
-      ref={containerRef}
-      className="picture_layout"
-      style={{ width: "100%", display: "flex", gap: "16px" }}
-    >
-      {colList.map((col, index) => (
-        <div
-          key={index}
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            gap: "16px",
-          }}
-        >
-          {col.map((picture) => (
-            <Card
-              hoverable
-              style={{ width: 200 }}
-              cover={<img alt="example" src={IMAGE_HOST + picture.url} />}
-            >
-              <Flex justify="space-around" align="start" vertical={true}>
-                <Typography.Text>{picture.name}</Typography.Text>
-                <div>
-                  {picture.tags.map((tag) => (
-                    <Tag
-                      key={tag.name}
-                      bordered={false}
-                      color="cyan"
-                      style={{ marginTop: 8 }}
-                    >
-                      {tag.name}
-                    </Tag>
-                  ))}
-                </div>
-              </Flex>
-            </Card>
-          ))}
-        </div>
-      ))}
+    <div className="picture_layout">
+      <div
+        ref={containerRef}
+        style={{ width: "100%", display: "flex", gap: "16px" }}
+      >
+        {colList.map((col, index) => (
+          <div
+            key={index}
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+            }}
+          >
+            {col.map((picture) => renderItem(picture))}
+          </div>
+        ))}
+      </div>
+      <div ref={sentinelRef} style={{ height: "1px" }} />
+      {isLoading && (
+        <div style={{ textAlign: "center", padding: "20px" }}>加载中...</div>
+      )}
     </div>
   );
 };

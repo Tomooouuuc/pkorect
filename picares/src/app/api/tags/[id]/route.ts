@@ -7,7 +7,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  console.log("id是========", id);
   try {
     await Tags.update({ isDelete: 1 }, { where: { id: id } });
     return success(true);

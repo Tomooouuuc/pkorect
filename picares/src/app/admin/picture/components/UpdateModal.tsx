@@ -1,7 +1,7 @@
 import request from "@/libs/request";
-import { ProColumns, ProTable } from "@ant-design/pro-components";
+import { ActionType, ProColumns, ProTable } from "@ant-design/pro-components";
 import { message, Modal } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DebounceSelect } from "../../components/DebounceSelect";
 
 interface Props {
@@ -28,48 +28,51 @@ const fetchUserList = async (name: string) => {
 };
 
 const UpdateModal: React.FC<Props> = (props) => {
+  const actionRef = useRef<ActionType>(null);
+
   const { visible, onCancel, columns, oldData, onSubmit } = props;
   const [tagValue, setTagValue] = useState<TagsValue[]>();
   useEffect(() => {
     if (visible) {
-      console.log("开始执行");
       const tagData = oldData?.tags.map((tag) => {
         return {
           label: tag.name,
           value: tag.name,
         };
       });
-      console.log("执行结束：", tagData);
       setTagValue(tagData);
-      console.log("赋值结束：", tagValue);
     }
   }, [visible]);
 
-  const modifiedColumns = columns.map((column) => {
-    if (column.dataIndex === "tagsList") {
-      return {
-        ...column,
-        renderFormItem() {
-          return (
-            <DebounceSelect
-              mode="tags"
-              value={tagValue}
-              placeholder="请输入"
-              fetchOptions={(values) => fetchUserList(values)}
-              style={{ width: "100%" }}
-              onChange={(newValue) => {
-                if (Array.isArray(newValue)) {
-                  console.log("newValue:", newValue);
-                  setTagValue(newValue);
-                }
-              }}
-            />
-          );
-        },
-      };
-    }
-    return column;
-  });
+  const modifiedColumns = columns
+    .map((column) => {
+      if (column.dataIndex === "tagsList") {
+        return {
+          ...column,
+          renderFormItem() {
+            return (
+              <DebounceSelect
+                mode="tags"
+                value={tagValue}
+                placeholder="请输入"
+                fetchOptions={(values) => fetchUserList(values)}
+                style={{ width: "100%" }}
+                onChange={(newValue) => {
+                  if (Array.isArray(newValue)) {
+                    setTagValue(newValue);
+                  }
+                }}
+              />
+            );
+          },
+        };
+      }
+      if (column.dataIndex === "reviewStatus") {
+        return false;
+      }
+      return column;
+    })
+    .filter((item) => !!item);
 
   return (
     <Modal
@@ -84,6 +87,7 @@ const UpdateModal: React.FC<Props> = (props) => {
     >
       <ProTable
         type={"form"}
+        actionRef={actionRef}
         columns={modifiedColumns}
         form={{
           initialValues: {

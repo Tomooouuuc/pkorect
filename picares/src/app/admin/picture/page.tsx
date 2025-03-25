@@ -1,13 +1,16 @@
 "use client";
-import { IMAGE_HOST } from "@/constant/user";
+import { IMAGE_HOST, reviewStatus } from "@/constant/user";
 import request from "@/libs/request";
+import { PlusOutlined } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { PageContainer, ProTable } from "@ant-design/pro-components";
-import { Button, message, Select, Tag } from "antd";
+import { Button, message, Select, Space, Tag } from "antd";
 import { Image as AntdImage } from "antd/lib";
 import { useEffect, useRef, useState } from "react";
 import { DebounceSelect } from "../components/DebounceSelect";
+import BatchCreateModal from "./components/BatchCreateModal";
 import UpdateModal from "./components/UpdateModal";
+import { fetchUserList } from "./utils";
 
 interface TagsValue {
   label: string;
@@ -17,6 +20,7 @@ interface TagsValue {
 const PictureAdminPage = () => {
   const actionRef = useRef<ActionType>(null);
   const [visible, setVisible] = useState<boolean>(false);
+  const [CreateVisible, setCreateVisible] = useState<boolean>(false);
   const [currentDate, setCurrentDate] = useState<RESPONSE.Pictrue>();
   const [categoryList, setCategoryList] = useState<RESPONSE.Categorys[]>([]);
   const [value, setValue] = useState<TagsValue[]>([]);
@@ -33,6 +37,24 @@ const PictureAdminPage = () => {
     getCategory();
   }, []);
 
+  const doReview = async (id: number, reviewStatus: number) => {
+    try {
+      await request(`/api/picture/review`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          id: id,
+          reviewStatus: reviewStatus,
+        },
+      });
+      actionRef.current?.reload();
+    } catch (e: any) {
+      message.error("审核失败");
+    }
+  };
+
   const doDelete = async (id: number) => {
     try {
       await request(`/api/picture/${id}`, { method: "DELETE" });
@@ -40,18 +62,6 @@ const PictureAdminPage = () => {
       actionRef.current?.reload();
     } catch (e: any) {
       message.error("删除失败");
-    }
-  };
-
-  const fetchUserList = async (name: string) => {
-    try {
-      const res = await request(`/api/tags?name=${name}`);
-      return res.data.map((item: any) => ({
-        label: item.name,
-        value: item.name,
-      }));
-    } catch (e: any) {
-      message.error("获取标签失败");
     }
   };
 
@@ -132,7 +142,6 @@ const PictureAdminPage = () => {
       },
       renderFormItem() {
         return (
-          // 我希望这个组件支持如果选项没有搜索到，就支持用户自己输入
           <DebounceSelect
             mode="tags"
             value={value}
@@ -141,7 +150,6 @@ const PictureAdminPage = () => {
             style={{ width: "100%" }}
             onChange={(newValue) => {
               if (Array.isArray(newValue)) {
-                console.log("newValue:", newValue);
                 setValue(newValue);
               }
             }}
@@ -184,6 +192,15 @@ const PictureAdminPage = () => {
       hideInForm: true,
     },
     {
+      title: "审核状态",
+      dataIndex: "reviewStatus",
+      valueEnum: {
+        0: { text: "待审核", status: "Processing" },
+        1: { text: "审核通过", status: "Success" },
+        2: { text: "审核拒绝", status: "Error" },
+      },
+    },
+    {
       title: "创建用户",
       valueType: "text",
       hideInForm: true,
@@ -203,27 +220,51 @@ const PictureAdminPage = () => {
       title: "操作",
       valueType: "option",
       key: "option",
-      render: (text, record, _, action) => [
-        <Button
-          color="cyan"
-          variant="filled"
-          size="small"
-          onClick={() => {
-            setVisible(true);
-            setCurrentDate(record);
-          }}
-        >
-          编辑
-        </Button>,
-        <Button
-          color="danger"
-          variant="filled"
-          size="small"
-          onClick={() => doDelete(record.id)}
-        >
-          删除
-        </Button>,
-      ],
+      render: (text, record, _, action) => {
+        return (
+          <Space>
+            {record.reviewStatus !== 1 && (
+              <Button
+                color="pink"
+                variant="filled"
+                size="small"
+                onClick={() => doReview(record.id, reviewStatus.PASS)}
+              >
+                通过
+              </Button>
+            )}
+            {record.reviewStatus !== 2 && (
+              <Button
+                color="red"
+                variant="filled"
+                size="small"
+                onClick={() => doReview(record.id, reviewStatus.REJECT)}
+              >
+                拒绝
+              </Button>
+            )}
+            <Button
+              color="cyan"
+              variant="filled"
+              size="small"
+              onClick={() => {
+                setVisible(true);
+                setCurrentDate(record);
+              }}
+            >
+              编辑
+            </Button>
+            <Button
+              color="danger"
+              variant="filled"
+              size="small"
+              onClick={() => doDelete(record.id)}
+            >
+              删除
+            </Button>
+          </Space>
+        );
+      },
     },
   ];
   return (
@@ -233,7 +274,6 @@ const PictureAdminPage = () => {
           columns={columns}
           actionRef={actionRef}
           request={async (params, sort, filter) => {
-            console.log("params:", params, "value", value);
             const tagsList = value.map((item) => {
               return item.value;
             });
@@ -253,7 +293,6 @@ const PictureAdminPage = () => {
               },
               data: body,
             })) as RESPONSE.Base<RESPONSE.Page<RESPONSE.Pictrue>>;
-            console.log("获取到的数据：", data);
             return {
               success: code === 0,
               data: data?.rows || [],
@@ -265,6 +304,7 @@ const PictureAdminPage = () => {
             span: 6,
             defaultCollapsed: false,
             labelWidth: "auto",
+            collapseRender: false,
           }}
           options={{
             setting: false,
@@ -273,6 +313,18 @@ const PictureAdminPage = () => {
           pagination={{
             pageSize: 10,
           }}
+          toolBarRender={() => [
+            <Button
+              key="button"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setCreateVisible(true);
+              }}
+              type="primary"
+            >
+              添加图片
+            </Button>,
+          ]}
         />
         <UpdateModal
           visible={visible}
@@ -286,6 +338,17 @@ const PictureAdminPage = () => {
           onCancel={() => {
             setVisible(false);
           }}
+        />
+        <BatchCreateModal
+          visible={CreateVisible}
+          onCancel={() => {
+            setCreateVisible(false);
+          }}
+          onSubmit={() => {
+            setCreateVisible(false);
+            actionRef.current?.reload();
+          }}
+          categoryList={categoryList}
         />
       </PageContainer>
     </div>

@@ -26,7 +26,6 @@ request.interceptors.response.use(
     // 处理响应数据
     const { data } = response;
     // 未登录
-    console.log("响应嘛：", data.code);
     if (data.code === 40100) {
       // 不是获取用户信息接口，或者不是登录页面，则跳转到登录页面
       if (
@@ -36,7 +35,6 @@ request.interceptors.response.use(
         window.location.href = `/user/login?redirect=${window.location.href}`;
       }
     } else if (data.code !== 0) {
-      console.log("响应错误：", data.message);
       // 其他错误
       throw new Error(data.message ?? "服务器错误");
     }

@@ -8,11 +8,9 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
 
   const { current, pageSize, sortField, sortOrder, ...restBody } = body;
-  console.log("bodyb", body);
 
   const page = checkPage({ current, pageSize, sortField, sortOrder });
   const filterBody = checkBody(restBody);
-  console.log("filterBody", filterBody);
 
   try {
     const pictureConditions: any[] = [{ isDelete: 0 }];
@@ -20,7 +18,7 @@ export async function POST(request: NextRequest) {
     const categoryConditions: any[] = [{ isDelete: 0 }];
     const tagsConditions: any[] = [{ isDelete: 0 }];
     for (const [key, value] of Object.entries(filterBody)) {
-      if (["name", "introduction"].includes(key)) {
+      if (["name", "introduction", "reviewStatus"].includes(key)) {
         pictureConditions.push({ [key]: { [Op.substring]: value } });
       } else if (["picFormat"].includes(key)) {
         pictureConditions.push({ [key]: value });
@@ -71,6 +69,7 @@ export async function POST(request: NextRequest) {
         "picHeight",
         "picScale",
         "picFormat",
+        "reviewStatus",
         "createTime",
       ],
       ...query,

@@ -107,7 +107,6 @@ const TagsAdminPage = () => {
               },
               data: body,
             })) as RESPONSE.Base<RESPONSE.Page<RESPONSE.Categorys>>;
-            console.log("获取到的数据：：", data);
             return {
               success: code === 0,
               data: data?.rows || [],

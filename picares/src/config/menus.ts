@@ -9,30 +9,24 @@ const menus: MenuDataItem[] = [
     access: roleLevels.user,
   },
   {
-    name: "管理",
+    path: "/admin/user",
+    name: "用户管理",
     access: roleLevels.admin,
-    children: [
-      {
-        path: "/admin/user",
-        name: "用户管理",
-        access: roleLevels.admin,
-      },
-      {
-        path: "/admin/picture",
-        name: "图片管理",
-        access: roleLevels.admin,
-      },
-      {
-        path: "/admin/categorys",
-        name: "目录管理",
-        access: roleLevels.admin,
-      },
-      {
-        path: "/admin/tags",
-        name: "标签管理",
-        access: roleLevels.admin,
-      },
-    ],
+  },
+  {
+    path: "/admin/picture",
+    name: "图片管理",
+    access: roleLevels.admin,
+  },
+  {
+    path: "/admin/categorys",
+    name: "目录管理",
+    access: roleLevels.admin,
+  },
+  {
+    path: "/admin/tags",
+    name: "标签管理",
+    access: roleLevels.admin,
   },
 ];
 

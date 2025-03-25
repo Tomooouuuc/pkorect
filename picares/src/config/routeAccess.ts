@@ -8,6 +8,7 @@ export const nextjsRoutes: RouteRule[] = [
   { nextjsPattern: "/admin/picture", role: "admin" },
   { nextjsPattern: "/admin/categorys", role: "admin" },
   { nextjsPattern: "/admin/tags", role: "admin" },
+  { nextjsPattern: "/admin/picture/[id]", role: "user" },
 
   { nextjsPattern: "/api/user/query", methods: ["POST"], role: "admin" },
   {
@@ -20,7 +21,7 @@ export const nextjsRoutes: RouteRule[] = [
   { nextjsPattern: "/api/picture/upload", methods: ["POST"], role: "user" },
   {
     nextjsPattern: "/api/picture/[id]",
-    methods: ["DELETE", "PUT"],
+    methods: ["DELETE", "PUT", "GET"],
     role: "admin",
   },
 

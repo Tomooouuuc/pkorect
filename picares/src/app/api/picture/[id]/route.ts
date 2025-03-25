@@ -1,5 +1,5 @@
 import { sequelize } from "@/libs/database";
-import { Categorys, Picture, Picturetag, Tags } from "@/libs/models";
+import { Categorys, Picture, Picturetag, Tags, User } from "@/libs/models";
 import { error, ErrorCode, success, throwUtil } from "@/utils/resultUtils";
 import { NextRequest } from "next/server";
 import { Op } from "sequelize";
@@ -69,6 +69,50 @@ export async function PUT(
       );
     });
     return success(true);
+  } catch (e: any) {
+    return error(e);
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
+  try {
+    const picture = await Picture.findOne({
+      attributes: [
+        "id",
+        "url",
+        "name",
+        "introduction",
+        "picSize",
+        "picWidth",
+        "picHeight",
+        "picScale",
+        "picFormat",
+        "createTime",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "userAvatar", "userName"],
+        },
+        {
+          model: Categorys,
+          attributes: ["name"],
+        },
+        {
+          model: Tags,
+          attributes: ["name"],
+          through: { attributes: [] },
+        },
+      ],
+      where: { id: id },
+      subQuery: false,
+    });
+    return success(picture);
   } catch (e: any) {
     return error(e);
   }

@@ -106,6 +106,10 @@ export const Picture = sequelize.define(
       type: DataTypes.TINYINT,
       defaultValue: 0,
     },
+    reviewStatus: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+    },
   },
   {
     tableName: "picture",

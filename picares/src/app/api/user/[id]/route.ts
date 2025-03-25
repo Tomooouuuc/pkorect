@@ -3,9 +3,12 @@ import { User } from "@/libs/models";
 import { error, ErrorCode, success, throwUtil } from "@/utils/resultUtils";
 import crypto from "crypto";
 import fs from "fs/promises";
+import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 import path from "path";
+import { Op } from "sequelize";
 import sharp from "sharp";
+import { authOptions } from "../../auth/[...nextauth]/route";
 import { checkUser } from "../utils";
 import { updateUser } from "./service";
 
@@ -64,6 +67,36 @@ export async function PUT(
       });
     }
     return success(true);
+  } catch (e: any) {
+    return error(e);
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id.toString();
+
+  const isUser = userId === id;
+  const attributes = ["userName", "userAvatar", "userProfile"];
+  if (isUser) {
+    attributes.push("userRole");
+    attributes.push("userAccount");
+  }
+  try {
+    const user = await User.findOne({
+      attributes,
+      where: {
+        [Op.and]: {
+          id: id,
+          isDelete: 0,
+        },
+      },
+    });
+    return success(user);
   } catch (e: any) {
     return error(e);
   }
