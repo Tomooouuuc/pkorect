@@ -1,8 +1,17 @@
 "use client";
 import { IMAGE_HOST } from "@/constant/user";
 import request from "@/libs/request";
-import { IdcardOutlined } from "@ant-design/icons";
-import { Avatar, Card, message, Space, Tabs, Tag, Typography } from "antd";
+import { IdcardOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  Card,
+  message,
+  Space,
+  Tabs,
+  Tag,
+  Typography,
+} from "antd";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -88,6 +97,18 @@ const UserPage = () => {
             </Space>
           </Space>
         </div>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            right: 16,
+            padding: "16px",
+          }}
+        >
+          <Button variant="solid" color="volcano" href="/user/settings">
+            修改个人信息
+          </Button>
+        </div>
       </Card>
       <Card>
         <Tabs
@@ -96,6 +117,13 @@ const UserPage = () => {
           onTabClick={(name) => {
             setName(name);
           }}
+          tabBarExtraContent={
+            <div style={{ paddingRight: 16 }}>
+              <Button type="primary" icon={<UploadOutlined />}>
+                上传图片
+              </Button>
+            </div>
+          }
           style={{ justifySelf: "start", width: "100%" }}
           items={categoryList.map((category) => {
             return {

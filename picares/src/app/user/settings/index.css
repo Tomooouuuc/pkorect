@@ -1,0 +1,7 @@
+.ant-space-gap-col-small {
+    width: 100%;
+}
+
+.ant-space-gap-col-small .ant-space-item:last-child {
+    width: 100%;
+}
